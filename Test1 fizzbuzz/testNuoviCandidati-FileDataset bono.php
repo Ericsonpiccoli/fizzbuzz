@@ -41,36 +41,22 @@ $ordineInScrittura = ""; // Ordine in scrittura
 $fileOut = ""; // Contenuto del file di output
 
 // Ciclo di creazione file
-for ($x = 0; $x < count($dataset); $x++) {
-    if (isset($dataset[$x])) { // Verifica se l'indice esiste nel dataset
-        $row = $dataset[$x];
-        $termineCiclo = false;
-    } else {
-        $row = new stdClass();
-        $row->order_ref = $ordineInScrittura;
-        $termineCiclo = true;
-    }
-
-    // Verifica se è necessario scrivere un nuovo file
-    if ($ordineInScrittura != $row->order_ref || $ordineInScrittura == "" || $termineCiclo == true) {
+foreach ($dataset as $index => $row) {
+    if ($ordineInScrittura != $row->order_ref || $ordineInScrittura == "" || $fileCreati >= 8) {
         if ($ordineInScrittura != "") {
             $nomefile = "ORD" . $client_id . trim($ordineInScrittura) . ".csv"; // Nome del file CSV
 
-            $byteScritti = true; // Simula la scrittura del file
+            // Simula a escrita do arquivo
             echo "FILE CSV -> " . $path . $nomefile . "\n";
 
-            if ($byteScritti != false) {
-                $filelck = str_replace('csv', 'lck', $nomefile); // Nome del file di lock
-                echo "FILE LOCK -> " . $path . $filelck . "\n";
+            $filelck = str_replace('csv', 'lck', $nomefile); // Nome del file di lock
+            echo "FILE LOCK -> " . $path . $filelck . "\n";
 
-                $fileCreati++; // Incrementa il contatore dei file creati
-                $fileOut = ""; // Resetta il contenuto del file di output
+            $fileCreati++; // Incrementa il contatore dei file creati
+            $fileOut = ""; // Resetta il contenuto del file di output
 
-                if ($termineCiclo == true) {
-                    break; // Esce dal ciclo se è il termine
-                }
-            } else {
-                throw new Exception("Scrittura file Odoo $nomefile fallita"); // Lancia un'eccezione in caso di errore
+            if ($fileCreati >= 8) {
+                break; // Esce do ciclo se foram criados 8 file
             }
         }
 
